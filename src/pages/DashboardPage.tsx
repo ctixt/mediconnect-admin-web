@@ -510,6 +510,36 @@ export default function DashboardPage({ onLogout }: DashboardPageProps) {
     });
   }, [requests, requestSearch, requestStatusFilter, requestArchiveFilter]);
 
+
+  const openUsersModule = (roleFilter = 'todos', statusFilter = 'todos') => {
+    setActiveModule('usuarios');
+    setUserSearch('');
+    setUserRoleFilter(roleFilter);
+    setUserStatusFilter(statusFilter);
+  };
+
+  const openValidatorsModule = (statusFilter = 'todos') => {
+    setActiveModule('validadores');
+    setValidatorSearch('');
+    setValidatorStatusFilter(statusFilter);
+  };
+
+  const openMedicinesModule = (statusFilter = 'todos') => {
+    setActiveModule('medicamentos');
+    setMedicineSearch('');
+    setMedicineStatusFilter(statusFilter);
+  };
+
+  const openRequestsModule = (
+    statusFilter = 'todos',
+    archiveFilter = 'activas'
+  ) => {
+    setActiveModule('solicitudes');
+    setRequestSearch('');
+    setRequestStatusFilter(statusFilter);
+    setRequestArchiveFilter(archiveFilter);
+  };
+
   const logout = async () => {
     await signOut(auth);
     onLogout();
@@ -1147,6 +1177,10 @@ export default function DashboardPage({ onLogout }: DashboardPageProps) {
             pendingRequests={pendingRequests}
             approvedRequests={approvedRequests}
             deliveredRequests={deliveredRequests}
+            openUsersModule={openUsersModule}
+            openValidatorsModule={openValidatorsModule}
+            openMedicinesModule={openMedicinesModule}
+            openRequestsModule={openRequestsModule}
           />
         )}
 
@@ -1320,6 +1354,10 @@ function DashboardModule({
   pendingRequests,
   approvedRequests,
   deliveredRequests,
+  openUsersModule,
+  openValidatorsModule,
+  openMedicinesModule,
+  openRequestsModule,
 }: {
   totalUsers: number;
   totalMedicines: number;
@@ -1334,6 +1372,10 @@ function DashboardModule({
   pendingRequests: number;
   approvedRequests: number;
   deliveredRequests: number;
+  openUsersModule: (roleFilter?: string, statusFilter?: string) => void;
+  openValidatorsModule: (statusFilter?: string) => void;
+  openMedicinesModule: (statusFilter?: string) => void;
+  openRequestsModule: (statusFilter?: string, archiveFilter?: string) => void;
 }) {
   return (
     <>
@@ -1342,24 +1384,28 @@ function DashboardModule({
           title="Usuarios registrados"
           value={totalUsers}
           description="Total de cuentas creadas en MediConnect."
+          onClick={() => openUsersModule('todos', 'todos')}
         />
 
         <StatCard
           title="Medicamentos"
           value={totalMedicines}
           description="Medicamentos registrados en el sistema."
+          onClick={() => openMedicinesModule('todos')}
         />
 
         <StatCard
           title="Solicitudes"
           value={totalRequests}
           description="Solicitudes realizadas por receptores."
+          onClick={() => openRequestsModule('todos', 'todas')}
         />
 
         <StatCard
           title="Validadores pendientes"
           value={pendingValidators}
           description="Usuarios que requieren autorización."
+          onClick={() => openValidatorsModule('pendiente')}
         />
       </section>
 
@@ -1367,27 +1413,71 @@ function DashboardModule({
         <div className="panel-card">
           <h3>Usuarios por rol</h3>
 
-          <InfoRow label="Donantes" value={donantes} />
-          <InfoRow label="Receptores" value={receptores} />
-          <InfoRow label="Validadores" value={validadores} />
-          <InfoRow label="Administradores" value={admins} />
+          <InfoRow
+            label="Donantes"
+            value={donantes}
+            onClick={() => openUsersModule('donante', 'todos')}
+          />
+          <InfoRow
+            label="Receptores"
+            value={receptores}
+            onClick={() => openUsersModule('receptor', 'todos')}
+          />
+          <InfoRow
+            label="Validadores"
+            value={validadores}
+            onClick={() => openUsersModule('validador', 'todos')}
+          />
+          <InfoRow
+            label="Administradores"
+            value={admins}
+            onClick={() => openUsersModule('admin', 'todos')}
+          />
         </div>
 
         <div className="panel-card">
           <h3>Estado de medicamentos</h3>
 
-          <InfoRow label="Publicados" value={publishedMedicines} />
-          <InfoRow label="Desactivados por admin" value={disabledMedicines} />
-          <InfoRow label="Total registrados" value={totalMedicines} />
+          <InfoRow
+            label="Publicados"
+            value={publishedMedicines}
+            onClick={() => openMedicinesModule('publicado')}
+          />
+          <InfoRow
+            label="Desactivados por admin"
+            value={disabledMedicines}
+            onClick={() => openMedicinesModule('desactivado')}
+          />
+          <InfoRow
+            label="Total registrados"
+            value={totalMedicines}
+            onClick={() => openMedicinesModule('todos')}
+          />
         </div>
 
         <div className="panel-card">
           <h3>Estado de solicitudes</h3>
 
-          <InfoRow label="Pendientes" value={pendingRequests} />
-          <InfoRow label="Aprobadas" value={approvedRequests} />
-          <InfoRow label="Entregadas" value={deliveredRequests} />
-          <InfoRow label="Total solicitudes" value={totalRequests} />
+          <InfoRow
+            label="Pendientes"
+            value={pendingRequests}
+            onClick={() => openRequestsModule('pendiente', 'activas')}
+          />
+          <InfoRow
+            label="Aprobadas"
+            value={approvedRequests}
+            onClick={() => openRequestsModule('aprobado', 'todas')}
+          />
+          <InfoRow
+            label="Entregadas"
+            value={deliveredRequests}
+            onClick={() => openRequestsModule('entregado', 'todas')}
+          />
+          <InfoRow
+            label="Total solicitudes"
+            value={totalRequests}
+            onClick={() => openRequestsModule('todos', 'todas')}
+          />
         </div>
       </section>
     </>
@@ -1442,24 +1532,44 @@ function UsersModule({
           title="Usuarios"
           value={totalUsers}
           description="Cuentas registradas en el sistema."
+          onClick={() => {
+            setUserSearch('');
+            setUserRoleFilter('todos');
+            setUserStatusFilter('todos');
+          }}
         />
 
         <StatCard
           title="Activos"
           value={activeUsers}
           description="Usuarios que pueden ingresar."
+          onClick={() => {
+            setUserSearch('');
+            setUserRoleFilter('todos');
+            setUserStatusFilter('activo');
+          }}
         />
 
         <StatCard
           title="Suspendidos"
           value={suspendedUsers}
           description="Cuentas bloqueadas por administración."
+          onClick={() => {
+            setUserSearch('');
+            setUserRoleFilter('todos');
+            setUserStatusFilter('suspendido');
+          }}
         />
 
         <StatCard
           title="Soporte"
           value={supportRequiredUsers}
           description="Usuarios que requieren ayuda de acceso."
+          onClick={() => {
+            setUserSearch('');
+            setUserRoleFilter('todos');
+            setUserStatusFilter('soporte');
+          }}
         />
       </section>
 
@@ -1622,10 +1732,42 @@ function ValidatorsModule({
   return (
     <>
       <section className="stats-grid">
-        <StatCard title="Validadores" value={totalValidators} description="Usuarios registrados como validadores." />
-        <StatCard title="Pendientes" value={pendingValidators} description="Requieren autorización administrativa." />
-        <StatCard title="Autorizados" value={authorizedValidators} description="Pueden revisar solicitudes y confirmar procesos." />
-        <StatCard title="Rechazados" value={rejectedValidators} description="No fueron aprobados por administración." />
+        <StatCard
+          title="Validadores"
+          value={totalValidators}
+          description="Usuarios registrados como validadores."
+          onClick={() => {
+            setValidatorSearch('');
+            setValidatorStatusFilter('todos');
+          }}
+        />
+        <StatCard
+          title="Pendientes"
+          value={pendingValidators}
+          description="Requieren autorización administrativa."
+          onClick={() => {
+            setValidatorSearch('');
+            setValidatorStatusFilter('pendiente');
+          }}
+        />
+        <StatCard
+          title="Autorizados"
+          value={authorizedValidators}
+          description="Pueden revisar solicitudes y confirmar procesos."
+          onClick={() => {
+            setValidatorSearch('');
+            setValidatorStatusFilter('autorizado');
+          }}
+        />
+        <StatCard
+          title="Rechazados"
+          value={rejectedValidators}
+          description="No fueron aprobados por administración."
+          onClick={() => {
+            setValidatorSearch('');
+            setValidatorStatusFilter('rechazado');
+          }}
+        />
       </section>
 
       <section className="panel-card user-module-card">
@@ -1734,25 +1876,99 @@ function MedicinesModule({
   return (
     <>
       <section className="stats-grid">
-        <StatCard title="Medicamentos" value={totalMedicines} description="Registros totales en el inventario." />
-        <StatCard title="Publicados" value={publishedMedicines} description="Disponibles para receptores." />
-        <StatCard title="Críticos" value={expiredMedicines + expiring30Medicines + invalidExpirationMedicines} description="Vencidos, por vencer o con fecha inválida." />
-        <StatCard title="Desactivados" value={disabledMedicines} description="Bloqueados por administración." />
+        <StatCard
+          title="Medicamentos"
+          value={totalMedicines}
+          description="Registros totales en el inventario."
+          onClick={() => {
+            setMedicineSearch('');
+            setMedicineStatusFilter('todos');
+          }}
+        />
+        <StatCard
+          title="Publicados"
+          value={publishedMedicines}
+          description="Disponibles para receptores."
+          onClick={() => {
+            setMedicineSearch('');
+            setMedicineStatusFilter('publicado');
+          }}
+        />
+        <StatCard
+          title="Críticos"
+          value={expiredMedicines + expiring30Medicines + invalidExpirationMedicines}
+          description="Vencidos, por vencer o con fecha inválida."
+          onClick={() => {
+            setMedicineSearch('');
+            setMedicineStatusFilter('por_vencer_30');
+          }}
+        />
+        <StatCard
+          title="Desactivados"
+          value={disabledMedicines}
+          description="Bloqueados por administración."
+          onClick={() => {
+            setMedicineSearch('');
+            setMedicineStatusFilter('desactivado');
+          }}
+        />
       </section>
 
       <section className="content-grid">
         <div className="panel-card">
           <h3>Estado del inventario</h3>
-          <InfoRow label="Agotados" value={depletedMedicines} />
-          <InfoRow label="Pendientes de validación" value={pendingValidationMedicines} />
-          <InfoRow label="Desactivados" value={disabledMedicines} />
+          <InfoRow
+            label="Agotados"
+            value={depletedMedicines}
+            onClick={() => {
+              setMedicineSearch('');
+              setMedicineStatusFilter('agotado');
+            }}
+          />
+          <InfoRow
+            label="Pendientes de validación"
+            value={pendingValidationMedicines}
+            onClick={() => {
+              setMedicineSearch('');
+              setMedicineStatusFilter('pendiente');
+            }}
+          />
+          <InfoRow
+            label="Desactivados"
+            value={disabledMedicines}
+            onClick={() => {
+              setMedicineSearch('');
+              setMedicineStatusFilter('desactivado');
+            }}
+          />
         </div>
 
         <div className="panel-card">
           <h3>Alertas de vencimiento</h3>
-          <InfoRow label="Vencidos activos" value={expiredMedicines} />
-          <InfoRow label="Por vencer en 30 días" value={expiring30Medicines} />
-          <InfoRow label="Fecha inválida o faltante" value={invalidExpirationMedicines} />
+          <InfoRow
+            label="Vencidos activos"
+            value={expiredMedicines}
+            onClick={() => {
+              setMedicineSearch('');
+              setMedicineStatusFilter('vencido');
+            }}
+          />
+          <InfoRow
+            label="Por vencer en 30 días"
+            value={expiring30Medicines}
+            onClick={() => {
+              setMedicineSearch('');
+              setMedicineStatusFilter('por_vencer_30');
+            }}
+          />
+          <InfoRow
+            label="Fecha inválida o faltante"
+            value={invalidExpirationMedicines}
+            onClick={() => {
+              setMedicineSearch('');
+              setMedicineStatusFilter('fecha_invalida');
+            }}
+          />
         </div>
 
         <div className="panel-card">
@@ -1892,26 +2108,118 @@ function RequestsModule({
   return (
     <>
       <section className="stats-grid">
-        <StatCard title="Solicitudes" value={totalRequests} description="Total registradas en el sistema." />
-        <StatCard title="Pendientes" value={pendingRequests} description="Requieren seguimiento o validación." />
-        <StatCard title="Aprobadas" value={approvedRequests} description="Solicitudes autorizadas." />
-        <StatCard title="Archivadas" value={archivedRequests} description="Ocultas del historial activo." />
+        <StatCard
+          title="Solicitudes"
+          value={totalRequests}
+          description="Total registradas en el sistema."
+          onClick={() => {
+            setRequestSearch('');
+            setRequestStatusFilter('todos');
+            setRequestArchiveFilter('todas');
+          }}
+        />
+        <StatCard
+          title="Pendientes"
+          value={pendingRequests}
+          description="Requieren seguimiento o validación."
+          onClick={() => {
+            setRequestSearch('');
+            setRequestStatusFilter('pendiente');
+            setRequestArchiveFilter('activas');
+          }}
+        />
+        <StatCard
+          title="Aprobadas"
+          value={approvedRequests}
+          description="Solicitudes autorizadas."
+          onClick={() => {
+            setRequestSearch('');
+            setRequestStatusFilter('aprobado');
+            setRequestArchiveFilter('todas');
+          }}
+        />
+        <StatCard
+          title="Archivadas"
+          value={archivedRequests}
+          description="Ocultas del historial activo."
+          onClick={() => {
+            setRequestSearch('');
+            setRequestStatusFilter('todos');
+            setRequestArchiveFilter('archivadas');
+          }}
+        />
       </section>
 
       <section className="content-grid">
         <div className="panel-card">
           <h3>Estado de solicitudes</h3>
-          <InfoRow label="Pendientes" value={pendingRequests} />
-          <InfoRow label="Aprobadas" value={approvedRequests} />
-          <InfoRow label="Rechazadas" value={rejectedRequests} />
-          <InfoRow label="Entregadas" value={deliveredRequests} />
+          <InfoRow
+            label="Pendientes"
+            value={pendingRequests}
+            onClick={() => {
+              setRequestSearch('');
+              setRequestStatusFilter('pendiente');
+              setRequestArchiveFilter('activas');
+            }}
+          />
+          <InfoRow
+            label="Aprobadas"
+            value={approvedRequests}
+            onClick={() => {
+              setRequestSearch('');
+              setRequestStatusFilter('aprobado');
+              setRequestArchiveFilter('todas');
+            }}
+          />
+          <InfoRow
+            label="Rechazadas"
+            value={rejectedRequests}
+            onClick={() => {
+              setRequestSearch('');
+              setRequestStatusFilter('rechazado');
+              setRequestArchiveFilter('todas');
+            }}
+          />
+          <InfoRow
+            label="Entregadas"
+            value={deliveredRequests}
+            onClick={() => {
+              setRequestSearch('');
+              setRequestStatusFilter('entregado');
+              setRequestArchiveFilter('todas');
+            }}
+          />
         </div>
 
         <div className="panel-card">
           <h3>Administración</h3>
-          <InfoRow label="Archivadas" value={archivedRequests} />
-          <InfoRow label="Activas" value={totalRequests - archivedRequests} />
-          <InfoRow label="Total" value={totalRequests} />
+          <InfoRow
+            label="Archivadas"
+            value={archivedRequests}
+            onClick={() => {
+              setRequestSearch('');
+              setRequestStatusFilter('todos');
+              setRequestArchiveFilter('archivadas');
+            }}
+          />
+          <InfoRow
+            label="Activas"
+            value={totalRequests - archivedRequests}
+            onClick={() => {
+              setRequestSearch('');
+              setRequestStatusFilter('todos');
+              setRequestArchiveFilter('activas');
+            }}
+          />
+          <InfoRow
+            label="Total"
+            value={totalRequests}
+            onClick={() => {
+              setRequestSearch('');
+              setRequestStatusFilter('todos');
+              setRequestArchiveFilter('todas');
+            }}
+          />
         </div>
 
         <div className="panel-card">
@@ -2815,21 +3123,60 @@ function InfoText({ label, value }: { label: string; value: string }) {
   );
 }
 
-function StatCard({ title, value, description }: { title: string; value: number; description: string }) {
-  return (
-    <div className="stat-card">
+function StatCard({
+  title,
+  value,
+  description,
+  onClick,
+}: {
+  title: string;
+  value: number;
+  description: string;
+  onClick?: () => void;
+}) {
+  const content = (
+    <>
       <span>{value}</span>
       <h3>{title}</h3>
       <p>{description}</p>
-    </div>
+      {onClick && <small>Ver detalle</small>}
+    </>
   );
+
+  if (onClick) {
+    return (
+      <button type="button" className="stat-card stat-card-button" onClick={onClick}>
+        {content}
+      </button>
+    );
+  }
+
+  return <div className="stat-card">{content}</div>;
 }
 
-function InfoRow({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="info-row">
+function InfoRow({
+  label,
+  value,
+  onClick,
+}: {
+  label: string;
+  value: number;
+  onClick?: () => void;
+}) {
+  const content = (
+    <>
       <span>{label}</span>
       <strong>{value}</strong>
-    </div>
+    </>
   );
+
+  if (onClick) {
+    return (
+      <button type="button" className="info-row info-row-button" onClick={onClick}>
+        {content}
+      </button>
+    );
+  }
+
+  return <div className="info-row">{content}</div>;
 }

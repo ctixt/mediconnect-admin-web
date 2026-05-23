@@ -1812,3 +1812,67 @@ select.filter-chip {
     box-shadow: none !important;
   }
 }
+
+
+/* =========================
+   INTERACCIONES DE RESUMEN
+========================= */
+
+.stat-card-button {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.stat-card-button:hover {
+  transform: translateY(-3px);
+  border-color: #a7f3d0;
+  box-shadow: 0 16px 34px rgba(31, 77, 54, 0.12);
+  background: #fbfffd;
+}
+
+.stat-card-button:focus-visible,
+.info-row-button:focus-visible {
+  outline: 3px solid rgba(46, 125, 79, 0.25);
+  outline-offset: 3px;
+}
+
+.stat-card small {
+  display: inline-flex;
+  margin-top: 12px;
+  color: #2e7d4f;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.info-row-button {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #e5f4ea;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background-color 150ms ease,
+    padding-left 150ms ease;
+}
+
+.info-row-button:hover {
+  background: #f1f8f4;
+  padding-left: 10px;
+}
+
+.info-row-button:last-child {
+  border-bottom: none;
+}
+
+.info-row-button strong::after {
+  content: '  →';
+  color: #2e7d4f;
+  font-weight: 900;
+}
