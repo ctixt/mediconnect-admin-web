@@ -169,25 +169,38 @@ export default function LoginPage({ onAdminLogin }: LoginPageProps) {
   const isBusy = loading || googleLoading;
 
   return (
-    <main className="login-page">
-      <section className="login-card">
-        <div className="brand-box">
-          <div className="brand-icon">+</div>
+    <main className="login-page login-page-premium">
+      <section className="login-card login-card-premium">
+        <div className="brand-box login-brand-panel">
+          <div className="brand-badge">Panel administrativo seguro</div>
+          <div className="brand-icon brand-icon-premium">+</div>
           <h1>MediConnect Admin</h1>
-          <p>Panel web administrativo para supervisión del sistema.</p>
+          <p>
+            Supervisa usuarios, donaciones, solicitudes, validadores y reportes
+            desde un panel web conectado en tiempo real con Firebase.
+          </p>
+
+          <div className="login-feature-list">
+            <div><strong>✓</strong><span>Acceso exclusivo para administradores</span></div>
+            <div><strong>✓</strong><span>Datos sincronizados con la app móvil</span></div>
+            <div><strong>✓</strong><span>Reportes y control operativo del sistema</span></div>
+          </div>
         </div>
 
-        <form onSubmit={handleLogin} className="login-form">
-          <h2>Iniciar sesión</h2>
-          <p className="form-description">
-            Ingresa con una cuenta autorizada como administrador.
-          </p>
+        <form onSubmit={handleLogin} className="login-form login-form-premium">
+          <div className="login-form-header">
+            <span className="login-kicker">Bienvenido</span>
+            <h2>Iniciar sesión</h2>
+            <p className="form-description">
+              Ingresa con una cuenta autorizada como administrador.
+            </p>
+          </div>
 
           {message && <div className="alert-message">{message}</div>}
 
           <button
             type="button"
-            className="google-button"
+            className="google-button google-button-premium"
             onClick={handleGoogleLogin}
             disabled={isBusy}
           >
@@ -234,9 +247,13 @@ export default function LoginPage({ onAdminLogin }: LoginPageProps) {
             </div>
           </label>
 
-          <button type="submit" className="primary-button" disabled={isBusy}>
+          <button type="submit" className="primary-button primary-button-premium" disabled={isBusy}>
             {loading ? 'Ingresando...' : 'Ingresar al panel'}
           </button>
+
+          <p className="login-helper-text">
+            Si tu cuenta no tiene rol de administrador, el sistema cerrará la sesión automáticamente.
+          </p>
         </form>
       </section>
     </main>

@@ -108,6 +108,7 @@ export default function DashboardPage({ onLogout }: DashboardPageProps) {
   const [users, setUsers] = useState<UserData[]>([]);
   const [medicines, setMedicines] = useState<MedicineData[]>([]);
   const [requests, setRequests] = useState<RequestData[]>([]);
+  const [currentAdmin, setCurrentAdmin] = useState<UserData | null>(null);
 
   const [userSearch, setUserSearch] = useState('');
   const [userRoleFilter, setUserRoleFilter] = useState('todos');
@@ -217,11 +218,36 @@ export default function DashboardPage({ onLogout }: DashboardPageProps) {
       }
     );
 
+    const currentAdminUid = auth.currentUser?.uid;
+    let unsubscribeCurrentAdmin: (() => void) | null = null;
+
+    if (currentAdminUid) {
+      unsubscribeCurrentAdmin = onSnapshot(
+        doc(db, 'users', currentAdminUid),
+        (snapshot) => {
+          if (!snapshot.exists()) {
+            setCurrentAdmin(null);
+            return;
+          }
+
+          setCurrentAdmin({
+            id: snapshot.id,
+            ...snapshot.data(),
+          } as UserData);
+        },
+        (error) => {
+          console.log(error);
+          setCurrentAdmin(null);
+        }
+      );
+    }
+
     return () => {
       unsubscribeUsers();
       unsubscribeMedicines();
       unsubscribeRequests();
       unsubscribeSettings();
+      if (unsubscribeCurrentAdmin) unsubscribeCurrentAdmin();
     };
   }, []);
 
@@ -996,6 +1022,38 @@ export default function DashboardPage({ onLogout }: DashboardPageProps) {
     return 'No adjuntó';
   };
 
+  const getAdminDisplayName = () => {
+    const fullName = String(currentAdmin?.fullName || '').trim();
+
+    if (fullName) return fullName.split(' ')[0];
+
+    const emailName = String(currentAdmin?.email || auth.currentUser?.email || '')
+      .split('@')[0]
+      .trim();
+
+    return emailName || 'Administrador';
+  };
+
+  const getAdminFullName = () => {
+    return (
+      String(currentAdmin?.fullName || '').trim() ||
+      auth.currentUser?.email ||
+      'Administrador'
+    );
+  };
+
+  const getAdminInitial = () => {
+    return getAdminDisplayName().charAt(0).toUpperCase() || 'A';
+  };
+
+  const getDashboardGreeting = () => {
+    if (activeModule === 'dashboard') {
+      return `Hola, ${getAdminDisplayName()}`;
+    }
+
+    return getModuleTitle();
+  };
+
   const getModuleTitle = () => {
     if (activeModule === 'dashboard') return 'Panel administrativo';
     if (activeModule === 'usuarios') return 'Usuarios del sistema';
@@ -1104,19 +1162,34 @@ export default function DashboardPage({ onLogout }: DashboardPageProps) {
           />
         </nav>
 
-        <button className="logout-button" onClick={logout}>
-          Cerrar sesión
-        </button>
+        <div className="sidebar-footer">
+          <span>Sesión protegida</span>
+          <small>Firebase Auth</small>
+        </div>
       </aside>
 
       <section className="main-content">
-        <header className="topbar">
-          <div>
-            <h1>{getModuleTitle()}</h1>
+        <header className="topbar enhanced-topbar">
+          <div className="topbar-title">
+            <span className="topbar-eyebrow">MediConnect Admin</span>
+            <h1>{getDashboardGreeting()}</h1>
             <p>{getModuleDescription()}</p>
           </div>
 
-          <div className="topbar-actions">
+          <div className="admin-session-card">
+            <div className="admin-avatar-small">{getAdminInitial()}</div>
+
+            <div className="admin-session-info">
+              <strong>{getAdminFullName()}</strong>
+              <span>Administrador conectado</span>
+            </div>
+
+            <button className="topbar-logout-button" onClick={logout}>
+              Cerrar sesión
+            </button>
+          </div>
+
+          <div className="topbar-actions topbar-alerts">
             {pendingValidators > 0 && (
               <button
                 className="warning-pill"

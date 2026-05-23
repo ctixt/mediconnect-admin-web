@@ -2594,3 +2594,292 @@ select.filter-chip {
   font-size: 13px;
   font-weight: 800;
 }
+
+/* =========================
+   PULIDO FINAL: LOGIN PREMIUM + SESIÓN ADMIN
+========================= */
+
+.login-page-premium {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(167, 243, 208, 0.72) 0, transparent 28%),
+    radial-gradient(circle at 88% 12%, rgba(191, 219, 254, 0.55) 0, transparent 26%),
+    radial-gradient(circle at 80% 86%, rgba(254, 243, 199, 0.6) 0, transparent 28%),
+    linear-gradient(135deg, #ecfdf5 0%, #f8fffb 46%, #ffffff 100%);
+}
+
+.login-card-premium {
+  width: min(1080px, 100%);
+  border: 1px solid rgba(216, 235, 221, 0.9);
+  border-radius: 34px;
+  box-shadow: 0 34px 90px rgba(22, 61, 43, 0.16);
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.login-brand-panel {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 12%, rgba(167, 243, 208, 0.28) 0, transparent 34%),
+    linear-gradient(160deg, #1f4d36 0%, #166534 52%, #0f2f23 100%);
+  padding: 58px 48px;
+}
+
+.login-brand-panel::after {
+  content: "";
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  right: -84px;
+  bottom: -74px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.brand-badge {
+  width: fit-content;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #dcfce7;
+  border-radius: 999px;
+  padding: 9px 13px;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 22px;
+}
+
+.brand-icon-premium {
+  margin: 0 0 22px;
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.16);
+}
+
+.login-feature-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 30px;
+  position: relative;
+  z-index: 1;
+}
+
+.login-feature-list div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  padding: 12px;
+  color: #ecfdf5;
+}
+
+.login-feature-list strong {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: #a7f3d0;
+  color: #064e3b;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.login-feature-list span {
+  font-size: 13px;
+  line-height: 18px;
+  color: #dcfce7;
+}
+
+.login-form-premium {
+  padding: 58px 48px;
+  background: linear-gradient(180deg, #ffffff 0%, #fafffb 100%);
+}
+
+.login-form-header {
+  margin-bottom: 20px;
+}
+
+.login-kicker {
+  display: inline-flex;
+  color: #15803d;
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+  border-radius: 999px;
+  padding: 6px 11px;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+.login-form-premium h2 {
+  font-size: 34px;
+  letter-spacing: -0.7px;
+}
+
+.google-button-premium {
+  border-color: #dbeafe;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.primary-button-premium {
+  min-height: 50px;
+  background: linear-gradient(135deg, #2e7d4f 0%, #166534 100%);
+  box-shadow: 0 14px 26px rgba(46, 125, 79, 0.2);
+}
+
+.login-helper-text {
+  margin: 14px 0 0;
+  color: #6b8a74;
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+}
+
+/* Topbar con usuario conectado */
+.enhanced-topbar {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  background:
+    radial-gradient(circle at top left, rgba(167, 243, 208, 0.32), transparent 30%),
+    linear-gradient(135deg, #ffffff 0%, #f8fffa 100%);
+}
+
+.topbar-title {
+  min-width: 0;
+}
+
+.topbar-eyebrow {
+  display: inline-flex;
+  margin-bottom: 8px;
+  color: #15803d;
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+  border-radius: 999px;
+  padding: 6px 11px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.admin-session-card {
+  display: grid;
+  grid-template-columns: auto minmax(150px, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #d8ebdd;
+  border-radius: 18px;
+  padding: 10px;
+  box-shadow: 0 10px 24px rgba(31, 77, 54, 0.07);
+  min-width: 330px;
+}
+
+.admin-avatar-small {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #2e7d4f, #22c55e);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 18px;
+  box-shadow: 0 10px 18px rgba(46, 125, 79, 0.22);
+}
+
+.admin-session-info {
+  min-width: 0;
+}
+
+.admin-session-info strong {
+  display: block;
+  color: #1f4d36;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-session-info span {
+  display: block;
+  color: #6b8a74;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.topbar-logout-button {
+  min-height: 40px;
+  border: 1px solid #fecaca;
+  background: #fff1f2;
+  color: #991b1b;
+  border-radius: 13px;
+  padding: 0 12px;
+  font-weight: 900;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.topbar-logout-button:hover {
+  background: #fee2e2;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(153, 27, 27, 0.12);
+}
+
+.topbar-alerts {
+  grid-column: 1 / -1;
+  justify-content: flex-start;
+  max-width: none;
+  padding-top: 4px;
+}
+
+.sidebar-footer {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  padding: 13px;
+}
+
+.sidebar-footer span {
+  display: block;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.sidebar-footer small {
+  display: block;
+  color: #a7f3d0;
+  margin-top: 4px;
+  font-weight: 700;
+}
+
+@media (max-width: 980px) {
+  .enhanced-topbar {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-session-card {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .login-card-premium {
+    border-radius: 24px;
+  }
+
+  .login-brand-panel,
+  .login-form-premium {
+    padding: 34px 24px;
+  }
+
+  .admin-session-card {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .topbar-logout-button {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+}
