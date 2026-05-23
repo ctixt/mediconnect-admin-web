@@ -4097,3 +4097,102 @@ select.filter-chip:hover {
     border-top: none !important;
   }
 }
+/* =========================
+   FIX AJUSTES DEL SISTEMA
+   Evita tarjetas apretadas
+========================= */
+
+.settings-switch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+.settings-switch {
+  min-height: 150px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  align-items: start;
+  text-align: left;
+  border-radius: 24px;
+}
+
+.settings-switch-toggle {
+  width: fit-content;
+  min-width: 54px;
+  height: 34px;
+  padding: 0 14px;
+  order: 2;
+  align-self: end;
+}
+
+.settings-switch div:last-child {
+  min-width: 0;
+}
+
+.settings-switch strong {
+  font-size: 18px;
+  line-height: 24px;
+  margin-bottom: 8px;
+  display: block;
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+
+.settings-switch small {
+  font-size: 14px;
+  line-height: 20px;
+  display: block;
+  max-width: 100%;
+  color: #476b55;
+}
+
+.settings-actions {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid #e5f4ea;
+}
+
+.settings-actions .success-button {
+  min-height: 48px;
+  padding: 0 20px;
+  border-radius: 16px;
+}
+
+/* En pantallas medianas o pequeñas, que todo respire mejor */
+@media (max-width: 980px) {
+  .settings-switch-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-switch {
+    min-height: auto;
+  }
+}
+
+/* En pantallas muy pequeñas, reduce un poco tamaños sin apretar */
+@media (max-width: 520px) {
+  .settings-switch {
+    padding: 18px;
+  }
+
+  .settings-switch strong {
+    font-size: 17px;
+    line-height: 23px;
+  }
+
+  .settings-switch small {
+    font-size: 13px;
+    line-height: 19px;
+  }
+
+  .settings-actions .success-button,
+  .settings-actions .filter-chip {
+    width: 100%;
+    justify-content: center;
+  }
+}
