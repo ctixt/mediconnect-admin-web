@@ -89,7 +89,6 @@ type SystemSettings = {
   evidenceRequired: boolean;
   validatorAuthorizationRequired: boolean;
   allowValidatorRegistration: boolean;
-  maintenanceMode: boolean;
 };
 
 const DEFAULT_SYSTEM_SETTINGS: SystemSettings = {
@@ -100,7 +99,6 @@ const DEFAULT_SYSTEM_SETTINGS: SystemSettings = {
   evidenceRequired: true,
   validatorAuthorizationRequired: true,
   allowValidatorRegistration: true,
-  maintenanceMode: false,
 };
 
 export default function DashboardPage({ onLogout }: DashboardPageProps) {
@@ -207,10 +205,6 @@ export default function DashboardPage({ onLogout }: DashboardPageProps) {
             typeof data.allowValidatorRegistration === 'boolean'
               ? data.allowValidatorRegistration
               : DEFAULT_SYSTEM_SETTINGS.allowValidatorRegistration,
-          maintenanceMode:
-            typeof data.maintenanceMode === 'boolean'
-              ? data.maintenanceMode
-              : DEFAULT_SYSTEM_SETTINGS.maintenanceMode,
         };
 
         setSystemSettings(loadedSettings);
@@ -936,7 +930,6 @@ export default function DashboardPage({ onLogout }: DashboardPageProps) {
             settingsDraft.validatorAuthorizationRequired,
           allowValidatorRegistration:
             settingsDraft.allowValidatorRegistration,
-          maintenanceMode: settingsDraft.maintenanceMode,
           updatedAt: new Date(),
           updatedBy: auth.currentUser?.uid || null,
         },
@@ -2857,15 +2850,6 @@ function SettingsModule({
           }
         />
 
-        <StatCard
-          title="Mantenimiento"
-          value={settingsDraft.maintenanceMode ? 1 : 0}
-          description={
-            settingsDraft.maintenanceMode
-              ? 'Modo mantenimiento activado.'
-              : 'Sistema operativo normal.'
-          }
-        />
       </section>
 
       <section className="settings-layout">
@@ -2960,13 +2944,6 @@ function SettingsModule({
               }
             />
 
-            <SettingsSwitch
-              title="Modo mantenimiento"
-              description="Úsalo solo cuando quieras indicar que el sistema está en revisión."
-              checked={settingsDraft.maintenanceMode}
-              onChange={(value) => updateDraft('maintenanceMode', value)}
-              danger
-            />
           </div>
 
           <div className="settings-actions">
@@ -3024,18 +3001,14 @@ function SettingsModule({
                   : 'Bloqueado'
               }
             />
-            <InfoText
-              label="Mantenimiento"
-              value={systemSettings.maintenanceMode ? 'Activo' : 'Inactivo'}
-            />
           </div>
 
           <div className="settings-help-card">
             <h3>Recomendación</h3>
             <p>
               Mantén el mínimo de vencimiento en 30 días o más para reducir el
-              riesgo de publicar medicamentos próximos a vencer. Si activas modo
-              mantenimiento, avisa a los usuarios con un mensaje claro.
+              riesgo de publicar medicamentos próximos a vencer. También revisa
+              periódicamente las alertas de medicamentos críticos y solicitudes pendientes.
             </p>
           </div>
         </aside>
