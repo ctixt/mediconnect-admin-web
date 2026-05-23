@@ -104,6 +104,8 @@ const DEFAULT_SYSTEM_SETTINGS: SystemSettings = {
 export default function DashboardPage({ onLogout }: DashboardPageProps) {
   const [activeModule, setActiveModule] = useState<AdminModule>('dashboard');
   const [loading, setLoading] = useState(true);
+  const [compactView, setCompactView] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const [users, setUsers] = useState<UserData[]>([]);
   const [medicines, setMedicines] = useState<MedicineData[]>([]);
@@ -133,6 +135,31 @@ export default function DashboardPage({ onLogout }: DashboardPageProps) {
   );
   const [settingsLoading, setSettingsLoading] = useState(true);
   const [settingsSaving, setSettingsSaving] = useState(false);
+
+  useEffect(() => {
+    const content = document.querySelector('.main-content');
+
+    const handleScroll = () => {
+      const scrollValue = content instanceof HTMLElement ? content.scrollTop : window.scrollY;
+      setShowScrollTop(scrollValue > 320);
+    };
+
+    if (content instanceof HTMLElement) {
+      content.addEventListener('scroll', handleScroll);
+    } else {
+      window.addEventListener('scroll', handleScroll);
+    }
+
+    handleScroll();
+
+    return () => {
+      if (content instanceof HTMLElement) {
+        content.removeEventListener('scroll', handleScroll);
+      } else {
+        window.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const unsubscribeUsers = onSnapshot(collection(db, 'users'), (snapshot) => {
@@ -1046,6 +1073,26 @@ export default function DashboardPage({ onLogout }: DashboardPageProps) {
     return getAdminDisplayName().charAt(0).toUpperCase() || 'A';
   };
 
+  const getFormattedToday = () => {
+    return new Intl.DateTimeFormat('es-GT', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    }).format(new Date());
+  };
+
+  const scrollToTop = () => {
+    const content = document.querySelector('.main-content');
+
+    if (content instanceof HTMLElement) {
+      content.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const getDashboardGreeting = () => {
     if (activeModule === 'dashboard') {
       return `Hola, ${getAdminDisplayName()}`;
@@ -1168,12 +1215,16 @@ export default function DashboardPage({ onLogout }: DashboardPageProps) {
         </div>
       </aside>
 
-      <section className="main-content">
+      <section className={`main-content ${compactView ? 'compact-view' : ''}`}>
         <header className="topbar enhanced-topbar">
           <div className="topbar-title">
             <span className="topbar-eyebrow">MediConnect Admin</span>
             <h1>{getDashboardGreeting()}</h1>
-            <p>{getModuleDescription()}</p>
+            <p>
+              {activeModule === 'dashboard'
+                ? `${getModuleDescription()} Hoy es ${getFormattedToday()}.`
+                : getModuleDescription()}
+            </p>
           </div>
 
           <div className="admin-session-card">
@@ -1186,6 +1237,26 @@ export default function DashboardPage({ onLogout }: DashboardPageProps) {
 
             <button className="topbar-logout-button" onClick={logout}>
               Cerrar sesión
+            </button>
+          </div>
+
+          <div className="topbar-tools">
+            {activeModule !== 'dashboard' && (
+              <button
+                type="button"
+                className="topbar-tool-button"
+                onClick={() => setActiveModule('dashboard')}
+              >
+                Volver al dashboard
+              </button>
+            )}
+
+            <button
+              type="button"
+              className={`topbar-tool-button ${compactView ? 'active' : ''}`}
+              onClick={() => setCompactView(!compactView)}
+            >
+              {compactView ? 'Vista cómoda' : 'Vista compacta'}
             </button>
           </div>
 
@@ -1228,6 +1299,22 @@ export default function DashboardPage({ onLogout }: DashboardPageProps) {
           </div>
         </header>
 
+        <ModuleQuickSummary
+          activeModule={activeModule}
+          totalUsers={totalUsers}
+          totalMedicines={totalMedicines}
+          totalRequests={totalRequests}
+          pendingValidators={pendingValidators}
+          criticalMedicines={criticalMedicines}
+          supportRequiredUsers={supportRequiredUsers}
+          pendingRequests={pendingRequests}
+          openUsersModule={openUsersModule}
+          openValidatorsModule={openValidatorsModule}
+          openMedicinesModule={openMedicinesModule}
+          openRequestsModule={openRequestsModule}
+        />
+
+        <section key={activeModule} className="module-transition">
         {activeModule === 'dashboard' && (
           <DashboardModule
             totalUsers={totalUsers}
@@ -1380,8 +1467,138 @@ export default function DashboardPage({ onLogout }: DashboardPageProps) {
             resetSettingsDraft={resetSettingsDraft}
           />
         )}
+        </section>
+
+        {showScrollTop && (
+          <button type="button" className="scroll-top-button" onClick={scrollToTop}>
+            ↑
+          </button>
+        )}
       </section>
     </main>
+  );
+}
+
+
+function ModuleQuickSummary({
+  activeModule,
+  totalUsers,
+  totalMedicines,
+  totalRequests,
+  pendingValidators,
+  criticalMedicines,
+  supportRequiredUsers,
+  pendingRequests,
+  openUsersModule,
+  openValidatorsModule,
+  openMedicinesModule,
+  openRequestsModule,
+}: {
+  activeModule: AdminModule;
+  totalUsers: number;
+  totalMedicines: number;
+  totalRequests: number;
+  pendingValidators: number;
+  criticalMedicines: number;
+  supportRequiredUsers: number;
+  pendingRequests: number;
+  openUsersModule: (roleFilter?: string, statusFilter?: string) => void;
+  openValidatorsModule: (statusFilter?: string) => void;
+  openMedicinesModule: (statusFilter?: string) => void;
+  openRequestsModule: (statusFilter?: string, archiveFilter?: string) => void;
+}) {
+  const getSummaryContent = () => {
+    if (activeModule === 'usuarios') {
+      return {
+        tone: 'blue',
+        title: 'Gestión de usuarios',
+        text: 'Administra roles, soporte de acceso y estado de cuentas registradas.',
+        primary: `${totalUsers} usuario(s)`,
+        secondary: `${supportRequiredUsers} con soporte`,
+      };
+    }
+
+    if (activeModule === 'validadores') {
+      return {
+        tone: 'purple',
+        title: 'Control de validadores',
+        text: 'Revisa perfiles profesionales y autoriza únicamente cuentas verificadas.',
+        primary: `${pendingValidators} pendiente(s)`,
+        secondary: 'Revisión documental',
+      };
+    }
+
+    if (activeModule === 'medicamentos') {
+      return {
+        tone: 'green',
+        title: 'Inventario de medicamentos',
+        text: 'Supervisa disponibilidad, vencimientos, validación y registros desactivados.',
+        primary: `${totalMedicines} medicamento(s)`,
+        secondary: `${criticalMedicines} alerta(s)`,
+      };
+    }
+
+    if (activeModule === 'solicitudes') {
+      return {
+        tone: 'orange',
+        title: 'Seguimiento de solicitudes',
+        text: 'Controla estados, entregas, evidencias y solicitudes archivadas.',
+        primary: `${totalRequests} solicitud(es)`,
+        secondary: `${pendingRequests} pendiente(s)`,
+      };
+    }
+
+    if (activeModule === 'reportes') {
+      return {
+        tone: 'teal',
+        title: 'Reportes administrativos',
+        text: 'Genera reportes por usuarios, medicamentos, solicitudes, validadores y alertas.',
+        primary: 'PDF / impresión',
+        secondary: 'Análisis operativo',
+      };
+    }
+
+    if (activeModule === 'ajustes') {
+      return {
+        tone: 'gray',
+        title: 'Ajustes del sistema',
+        text: 'Configura reglas operativas básicas sin modificar el código fuente.',
+        primary: 'Configuración',
+        secondary: 'Reglas activas',
+      };
+    }
+
+    return {
+      tone: 'emerald',
+      title: 'Resumen operativo',
+      text: 'Accesos rápidos a las áreas principales del sistema administrativo.',
+      primary: `${totalUsers} usuarios`,
+      secondary: `${totalMedicines} medicamentos`,
+    };
+  };
+
+  const summary = getSummaryContent();
+
+  return (
+    <section className={`module-summary module-summary-${summary.tone}`}>
+      <div>
+        <span className="module-summary-kicker">Vista activa</span>
+        <h2>{summary.title}</h2>
+        <p>{summary.text}</p>
+      </div>
+
+      <div className="module-summary-actions">
+        <strong>{summary.primary}</strong>
+        <span>{summary.secondary}</span>
+      </div>
+
+      <div className="module-summary-shortcuts">
+        <button type="button" onClick={() => openUsersModule('todos', 'todos')}>Usuarios</button>
+        <button type="button" onClick={() => openMedicinesModule('todos')}>Medicamentos</button>
+        <button type="button" onClick={() => openRequestsModule('todos', 'todas')}>Solicitudes</button>
+        <button type="button" onClick={() => openValidatorsModule('pendiente')}>Validadores</button>
+      </div>
+    </section>
   );
 }
 
